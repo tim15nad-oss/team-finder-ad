@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,10 +40,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "team_finder.urls"
 
+TASK_VERSION = config("TASK_VERSION", default="1")
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / f"templates_var{config('TASK_VERSION', default='1')}"],
+        "DIRS": [BASE_DIR / f"templates_var{TASK_VERSION}"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -80,16 +83,28 @@ if not DEBUG:
     AUTH_PASSWORD_VALIDATORS.extend(
         [
             {
-                "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+                "NAME": (
+                    "django.contrib.auth.password_validation."
+                    "UserAttributeSimilarityValidator"
+                ),
             },
             {
-                "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+                "NAME": (
+                    "django.contrib.auth.password_validation."
+                    "MinimumLengthValidator"
+                ),
             },
             {
-                "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+                "NAME": (
+                    "django.contrib.auth.password_validation."
+                    "CommonPasswordValidator"
+                ),
             },
             {
-                "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+                "NAME": (
+                    "django.contrib.auth.password_validation."
+                    "NumericPasswordValidator"
+                ),
             },
         ]
     )
@@ -105,12 +120,12 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+
 # Media files
 
 MEDIA_URL = "/media/"
@@ -121,4 +136,5 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AVATAR_FONT_PATH = BASE_DIR / "static" / "fonts" / "Neue_Haas_Grotesk_Display_Pro_75_Bold.otf"
+FONT_DIR = BASE_DIR / "static" / "fonts"
+AVATAR_FONT_PATH = FONT_DIR / "Neue_Haas_Grotesk_Display_Pro_75_Bold.otf"

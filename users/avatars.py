@@ -1,34 +1,25 @@
 import random
 from io import BytesIO
+from uuid import uuid4
 
 from django.conf import settings
 from django.core.files.base import ContentFile
 from PIL import Image, ImageDraw, ImageFont
 
-AVATAR_SIZE = 256
-BACKGROUNDS = ['#DCE7F5', '#E4F1E4', '#F5E6DC', '#EDE4F5', '#F5F0D6', '#DDEFF0']
-LETTER_COLOR = '#333A4A'
+BACKGROUNDS = ('#dce7f5', '#f5e6dc', '#e1f2e3', '#f3dcec', '#f7f0cf')
+TEXT_COLOR = '#333a4a'
+SIZE = 256
+FONT_SIZE = 128
 
 
-def _load_font(size):
-    try:
-        return ImageFont.truetype(str(settings.AVATAR_FONT_PATH), size)   # .otf из static/fonts
-    except OSError:
-        return ImageFont.load_default()      # запасной вариант: кириллица может не отрисоваться
-
-
-def make_avatar_file(name: str) -> ContentFile:
-    """PNG с первой буквой имени на случайном однотонном фоне."""
-    letter = (name.strip()[:1] or '?').upper()
-    image = Image.new('RGB', (AVATAR_SIZE, AVATAR_SIZE), random.choice(BACKGROUNDS))
+def make_avatar(letter: str) -> ContentFile:
+    image = Image.new('RGB', (SIZE, SIZE), random.choice(BACKGROUNDS))
     draw = ImageDraw.Draw(image)
-    font = _load_font(int(AVATAR_SIZE * 0.5))
-
+    font = ImageFont.truetype(str(settings.AVATAR_FONT_PATH), FONT_SIZE)
     left, top, right, bottom = draw.textbbox((0, 0), letter, font=font)
-    x = (AVATAR_SIZE - (right - left)) / 2 - left
-    y = (AVATAR_SIZE - (bottom - top)) / 2 - top
-    draw.text((x, y), letter, fill=LETTER_COLOR, font=font)
-
+    x = (SIZE - (right - left)) / 2 - left
+    y = (SIZE - (bottom - top)) / 2 - top
+    draw.text((x, y), letter, fill=TEXT_COLOR, font=font)
     buffer = BytesIO()
     image.save(buffer, format='PNG')
-    return ContentFile(buffer.getvalue())
+    return ContentFile(buffer.getvalue(), name=f'{uuid4().hex}.png')

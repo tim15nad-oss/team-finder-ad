@@ -149,3 +149,6 @@ dmypy.json
 
 media/
 staticfiles/
+
+db.sqlite3
+.idea/
