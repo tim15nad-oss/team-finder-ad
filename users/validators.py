@@ -2,7 +2,7 @@ from urllib.parse import urlparse
 
 from django.core.exceptions import ValidationError
 
-GITHUB_HOSTS = ('github.com', 'www.github.com')
+from .constants import GITHUB_HOSTS
 
 
 def validate_github_url(value: str) -> None:

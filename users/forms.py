@@ -1,11 +1,15 @@
-import re
-
 from django import forms
 from django.contrib.auth import authenticate
+from django.contrib.auth.forms import BaseUserCreationForm, UserChangeForm
 
+from .constants import (
+    PHONE_INPUT_MAX_LENGTH,
+    PHONE_INTERNATIONAL_PREFIX,
+    PHONE_LOCAL_PREFIX,
+    PHONE_PATTERN,
+    PHONE_SEPARATORS,
+)
 from .models import User
-
-PHONE_RE = re.compile(r'(8|\+7)\d{10}')
 
 
 class RegisterForm(forms.ModelForm):
@@ -46,6 +50,9 @@ class LoginForm(forms.Form):
 
 class ProfileForm(forms.ModelForm):
     avatar = forms.ImageField(label='Аватар', required=False)
+    phone = forms.CharField(
+        label='Телефон', required=False, max_length=PHONE_INPUT_MAX_LENGTH
+    )
 
     class Meta:
         model = User
@@ -55,16 +62,31 @@ class ProfileForm(forms.ModelForm):
 
     def clean_phone(self):
         raw = self.cleaned_data.get('phone') or ''
-        phone = re.sub(r'[\s()\-]', '', raw)
+        phone = PHONE_SEPARATORS.sub('', raw)
         if not phone:
             return None
-        if not PHONE_RE.fullmatch(phone):
+        if not PHONE_PATTERN.fullmatch(phone):
             raise forms.ValidationError(
                 'Телефон: 8XXXXXXXXXX или +7XXXXXXXXXX.'
             )
-        if phone.startswith('8'):
-            phone = '+7' + phone[1:]
+        if phone.startswith(PHONE_LOCAL_PREFIX):
+            local_part = phone[len(PHONE_LOCAL_PREFIX):]
+            phone = PHONE_INTERNATIONAL_PREFIX + local_part
         taken = User.objects.filter(phone=phone)
         if taken.exclude(pk=self.instance.pk).exists():
             raise forms.ValidationError('Этот телефон уже занят.')
         return phone
+
+
+class UserCreateForm(BaseUserCreationForm):
+
+    class Meta:
+        model = User
+        fields = ('email', 'name', 'surname')
+
+
+class UserEditForm(UserChangeForm):
+
+    class Meta:
+        model = User
+        fields = '__all__'

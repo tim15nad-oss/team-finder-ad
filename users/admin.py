@@ -1,20 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.forms import BaseUserCreationForm, UserChangeForm
 
+from .forms import UserCreateForm, UserEditForm
 from .models import User
-
-
-class UserCreateForm(BaseUserCreationForm):
-    class Meta:
-        model = User
-        fields = ('email', 'name', 'surname')
-
-
-class UserEditForm(UserChangeForm):
-    class Meta:
-        model = User
-        fields = '__all__'
 
 
 @admin.register(User)
