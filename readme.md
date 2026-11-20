@@ -76,7 +76,7 @@ copy .env_example .env      # Windows
 | Переменная              | Что указать |
 |-------------------------|-------------|
 | `DJANGO_SECRET_KEY`     | Случайная строка. Сгенерировать: `python -c "from django.core.management.utils import get_random_secret_key as g; print(g())"` |
-| `DJANGO_DEBUG`          | `True` для разработки, `False` для боевого запуска |
+| `DJANGO_DEBUG`          | `True` для разработки, `False` для запуска |
 | `DJANGO_ALLOWED_HOSTS`  | Разрешённые хосты через запятую, по умолчанию `localhost,127.0.0.1` |
 | `POSTGRES_DB`           | Имя базы данных, например `team_finder` |
 | `POSTGRES_USER`         | Пользователь PostgreSQL |
